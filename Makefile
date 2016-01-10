@@ -1,6 +1,6 @@
-CXXFLAGS += --std=c++11 -g3 -O0 -DDBGOUT
+CXXFLAGS += --std=c++11 -g3 -O0 -DDBGOUT -Wall -Wextra
 
-all : cf_gen cf_check commafree_check eastman
+all : cf_gen cf_check commafree_check eastman cf_all_paths
 
 cf_gen : cf_gen.cpp tuples.hpp cf_dict.hpp
 
@@ -10,5 +10,7 @@ commafree_check : commafree_check.cpp cf_dict.hpp
 
 eastman : cf_eastman.cpp eastman.cpp cf_eastman.h
 
+cf_all_paths : cf_all_paths.cpp tuples.hpp cf_dict.hpp
+
 clean:
-	rm -rf cf_gen cf_check commafree_check eastman a.out
+	rm -rf cf_gen cf_check commafree_check eastman cf_all_paths a.out

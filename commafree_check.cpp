@@ -37,7 +37,7 @@ void process_command_line (int argc, char **argv, int &n);
 int
 main (int argc, char **argv)
 {
-  int idx, n, total = 0, accepted = 0;
+  int n, total = 0, accepted = 0;
 
   process_command_line (argc, argv, n);
 

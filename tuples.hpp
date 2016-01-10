@@ -68,6 +68,7 @@ public:
       } while (ok);
 
       d.get_dict(out);
+      return out.size();
     }
 };
 

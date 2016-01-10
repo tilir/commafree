@@ -35,7 +35,7 @@ using std::vector;
 
 /* compare subword b[i-1]..b[i] with b[i]..b[i+1] from xs */
 static bool 
-compare_less (const vector<int> &xs, const vector<int> &b, int i) 
+compare_less (const vector<int> &xs, const vector<size_t> &b, int i) 
 {
   int j;
   int fst_start = b[i - 1];
@@ -48,8 +48,8 @@ compare_less (const vector<int> &xs, const vector<int> &b, int i)
 
   for (j = 0; j < fst_len; j++) 
     {
-      int fst_next = xs[b[i - 1] + j];
-      int snd_next = xs[b[i] + j];
+      int fst_next = xs[fst_start + j];
+      int snd_next = xs[snd_start + j];
 
       if (fst_next != snd_next)
         return fst_next > snd_next;
@@ -73,9 +73,9 @@ triple_vector (vector<T> &m)
 int 
 do_eastman (vector<int> &xs)
 {
-  int new_cnt, phase = 1, boundaries_cnt;
-  int n = xs.size();
-  vector<int> b(n * 3);  
+  size_t new_cnt, phase = 1, boundaries_cnt;
+  size_t n = xs.size();
+  vector<size_t> b(n * 3);  
 
   triple_vector(xs);
   std::iota (std::begin(b), std::end(b), 0);
@@ -83,7 +83,7 @@ do_eastman (vector<int> &xs)
   /* only one boundary point should survive */
   for (boundaries_cnt = n; boundaries_cnt > 1; boundaries_cnt = new_cnt)
     {
-      int i, k;
+      size_t i, k;
       std::deque<int> odd_basins;
 
       /* check for trivially cyclic input (say 0 0 0 is trivially cyclic) */
@@ -103,7 +103,7 @@ do_eastman (vector<int> &xs)
       /* main loop of Eastman's algorithm */
       while (i <= boundaries_cnt) 
         {
-          int q, j;
+          size_t q, j;
 
           /* climb the range */
           q = i + 1;
