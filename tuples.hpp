@@ -72,4 +72,43 @@ public:
     }
 };
 
+/* more sophisticated 1-0 prime strings generator based on 7.2.1.1-F */
+/* TODO: it might be extended to n-0 version? */
+class PrimeGen
+{
+  int m_j, m_k;
+  std::vector<int> m_a;
+
+public:
+  PrimeGen(int k) : m_j(1), m_k(k), m_a(k+1) { m_a[0] = -1; }
+
+  int get_next (std::vector<int>& out)
+    {
+      for (;;)
+        {
+          int c;
+
+          if (m_j == m_k)
+            {
+              out.resize(m_k);
+              std::copy(m_a.begin() + 1, m_a.end(), out.begin());
+              m_j = 0;
+              return 0;
+            }
+
+          m_j = m_k;
+          while (m_a[m_j] == 1)
+            m_j -= 1;
+
+          if (m_j == 0)
+            return -1;
+
+          m_a[m_j] = 1;
+
+          for (c = m_j + 1; c <= m_k; c++)
+            m_a[c] = m_a[c - m_j];
+        }
+    }
+};
+
 #endif
