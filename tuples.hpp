@@ -52,35 +52,16 @@ public:
       m_a[j] += 1;
       return true;
     }
-
-  /* put all comma-free representatives from all tuples in given config to out */  
-  int get_all_cf_reprs (vector< vector<int> > &out)
-    {
-      vector<int> nxt;
-      bool ok;
-      Cfdict d(m_n);
-
-      out.clear();
-
-      do {
-        ok = get_next(nxt);
-        d.add_tuple(nxt);
-      } while (ok);
-
-      d.get_dict(out);
-      return out.size();
-    }
 };
 
 /* more sophisticated 1-0 prime strings generator based on 7.2.1.1-F */
-/* TODO: it might be extended to n-0 version? */
 class PrimeGen
 {
-  int m_j, m_k;
+  int m_j, m_k, m_n;
   std::vector<int> m_a;
 
 public:
-  PrimeGen(int k) : m_j(1), m_k(k), m_a(k+1) { m_a[0] = -1; }
+  PrimeGen(int n, int k) : m_j(1), m_k(k), m_n(n), m_a(k+1) { m_a[0] = -1; }
 
   int get_next (std::vector<int>& out)
     {
@@ -97,13 +78,13 @@ public:
             }
 
           m_j = m_k;
-          while (m_a[m_j] == 1)
+          while (m_a[m_j] == m_n - 1)
             m_j -= 1;
 
           if (m_j == 0)
             return -1;
 
-          m_a[m_j] = 1;
+          m_a[m_j] += 1;
 
           for (c = m_j + 1; c <= m_k; c++)
             m_a[c] = m_a[c - m_j];

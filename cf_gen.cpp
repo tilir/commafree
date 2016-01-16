@@ -38,19 +38,15 @@ main (int argc, char **argv)
 
   process_command_line (argc, argv, n, k);
 
-  vector<int> config(k);
-  for (auto& x : config) { x = n; }
+  vector<int> res(k);
 
-  Tuples t(config);
+  PrimeGen pg(n, k);
 
-  vector< vector<int> > out;
-  t.get_all_cf_reprs(out);
-
-  for (const auto& nxt: out)
+  while (0 == pg.get_next(res))
     {
-      for (const auto& x: nxt)
-        cout << x << ' ';
-      cout << endl;
+      for (auto a : res)
+        cout << a << " ";
+      cout << std::endl;
     }
   
   return 0;
