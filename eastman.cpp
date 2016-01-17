@@ -40,9 +40,7 @@ main (int argc, char **argv)
 
   process_command_line (argc, argv, xs);
 
-  int result = do_eastman (xs);
-
-  cout << "required shift: " << result << endl;
+  (void) do_eastman (xs);
 
   return 0;
 }

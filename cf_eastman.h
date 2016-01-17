@@ -57,10 +57,6 @@
 // x is partitioned into n subwords of length 1. It successively removes
 // boundary points until only one subword is left; that subword is the answer.
 //
-// The algorithm is based on comparison of adjacent subwords y[j-1] and y[j].
-// If those subwords have the same length, we use lexicographic comparison;
-// otherwise we declare that the longer subword is bigger.
-//
 // Input/output:
 // x is sequence like 3 0 1 2 0 1 2 3 0 3 1 2 4 3 3 0 3 1 3 2 0
 //   it is modified inside routine

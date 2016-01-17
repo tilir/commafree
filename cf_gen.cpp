@@ -42,7 +42,7 @@ main (int argc, char **argv)
 
   PrimeGen pg(n, k);
 
-  while (0 == pg.get_next(res))
+  while (pg.get_next(res))
     {
       for (auto a : res)
         cout << a << " ";
@@ -58,16 +58,16 @@ process_command_line (int argc, char **argv, int &n, int &k)
   if (argc < 3)
     {
       cerr << "usage: \"" << argv[0] << " n k\" where n "
-              "is alphabet delimiter [0 .. n] and k is position count" << endl;
+              "is alphabet delimiter [0 .. n) and k is position count" << endl;
       throw std::runtime_error("incorrect command line");
     }
 
   n = atoi (argv[1]);
   k = atoi (argv[2]);
 
-  if ((n <= 0) || (k <= 0))
+  if ((n <= 1) || (k <= 1))
     {
-      cerr << "Both n and k shall be > 0" << endl;
+      cerr << "Both n and k shall be > 1" << endl;
       throw std::runtime_error("incorrect command line");     
     }
 }

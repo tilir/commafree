@@ -26,68 +26,83 @@ using std::search;
 /* simple n-tuple holder */
 class Tuples
 {
-  int m_n;
-  vector<int> m_a;
-  vector<int> m_max;
+  int bufsize;
+  vector<int> buffer;
+  vector<int> maxvals;
 public:
-  Tuples (vector<int> maxnums) : m_n(maxnums.size()), m_a(m_n), m_max(maxnums) {}
+  /* config is k-vector, config[k] is maximum value for k-th element */
+  Tuples (vector<int> config) : bufsize(config.size()), 
+    buffer(bufsize), maxvals(config) {}
 
   /* nxt is pure output parameter it will be discarded on entry */
   bool get_next (vector<int> &nxt)
     {
       int j;
 
-      nxt = m_a;
-      j = m_n - 1;
+      nxt = buffer;
+      j = bufsize - 1;
 
-      while ((j > -1) && (m_a[j] == m_max[j]))
+      while ((j > -1) && (buffer[j] == maxvals[j]))
         {
-          m_a[j] = 0;
+          buffer[j] = 0;
           j = j - 1;
         }
 
       if (j == -1)
         return false;
 
-      m_a[j] += 1;
+      buffer[j] += 1;
       return true;
     }
 };
 
-/* more sophisticated 1-0 prime strings generator based on 7.2.1.1-F */
+/* [0 - n)-alphabet, k-position prime strings generator 
+   based on 7.2.1.1-F */
 class PrimeGen
 {
-  int m_j, m_k, m_n;
-  std::vector<int> m_a;
+  int suffix_len, string_len, max_letter;
+  std::vector<int> buffer;
 
 public:
-  PrimeGen(int n, int k) : m_j(1), m_k(k), m_n(n), m_a(k+1) { m_a[0] = -1; }
+  PrimeGen(int n, int k) : suffix_len(1), string_len(k), 
+                           max_letter(n - 1), buffer(k+1) 
+    { 
+      assert (k > 1);
+      assert (n > 1);
+      buffer[0] = -1; 
+    }
 
-  int get_next (std::vector<int>& out)
+  bool get_next (std::vector<int>& out)
     {
+      /* See Knuth-7.2.1.1-F for details */
       for (;;)
         {
-          int c;
+          int ext;
 
-          if (m_j == m_k)
+          if (suffix_len == string_len)
             {
-              out.resize(m_k);
-              std::copy(m_a.begin() + 1, m_a.end(), out.begin());
-              m_j = 0;
-              return 0;
+              assert (out.size() == static_cast<size_t>(string_len));
+              std::copy(buffer.begin() + 1, buffer.end(), out.begin());
+              suffix_len = 0; 
+              return true;
             }
 
-          m_j = m_k;
-          while (m_a[m_j] == m_n - 1)
-            m_j -= 1;
+          /* find proper suffix lenght */
+          suffix_len = string_len;
+          while (buffer[suffix_len] == max_letter)
+            suffix_len -= 1;          
 
-          if (m_j == 0)
-            return -1;
+          /* here a[0] .. a[j] is pre-prime 
+             beacuse any proper suffix is pre-prime */
+          if (suffix_len == 0)
+            return false;
 
-          m_a[m_j] += 1;
+          /* increment pre-prime to make prime */
+          buffer[suffix_len] += 1;
 
-          for (c = m_j + 1; c <= m_k; c++)
-            m_a[c] = m_a[c - m_j];
+          /* k-extension of string */
+          for (ext = suffix_len + 1; ext <= string_len; ext++)
+            buffer[ext] = buffer[ext - suffix_len];
         }
     }
 };

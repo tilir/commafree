@@ -14,8 +14,8 @@
 // it outputs shift, in this case 12
 //
 // see cf_eastman.h for detailed description of approach
-// this file rewritten in C++ from commafree-eastman.w programm:
-// http://www-cs-faculty.stanford.edu/~uno/programs/commafree-eastman.w 
+// this file rewritten in C++ from commafree-eastman-new.w programm:
+// http://www-cs-faculty.stanford.edu/~uno/programs/commafree-eastman-new.w 
 //
 //===----------------------------------------------------------------------===//
 
@@ -33,6 +33,9 @@ using std::cerr;
 using std::endl;
 using std::vector;
 
+// true if subword b[i-1]..b[i] less then b[i]..b[i+1] from xs 
+// longer word counts greater
+// equal length words counts lexicographically less
 static bool
 compare_less (const vector<int> &xs, const vector<size_t> &b, int i)
 {
@@ -76,6 +79,11 @@ do_eastman (vector<int> &xs)
   size_t n = xs.size();
   vector<size_t> b(n * 3);  
 
+#ifdef DBGOUT
+  for (auto x : xs)
+    cout << x << " ";
+#endif
+
   triple_vector(xs);
   std::iota (std::begin(b), std::end(b), 0);
 
@@ -83,7 +91,7 @@ do_eastman (vector<int> &xs)
   for (boundaries_cnt = n; boundaries_cnt > 1; boundaries_cnt = new_cnt)
     {
       size_t i, i0, k;
-      std::deque<int> odd_basins;
+      std::deque<int> retain_points;
 
       /* check for trivially cyclic input (say 0 0 0 is trivially cyclic) */
       for (i = 1;; i++)
@@ -102,39 +110,41 @@ do_eastman (vector<int> &xs)
       if (i > boundaries_cnt)
         i -= boundaries_cnt;
 
+      /* we found i0 as starting point */
       i0 = i;
 
       while (i < i0 + boundaries_cnt)
         {
           size_t j;
 
+          /* digging the dip */
           for (j = i + 2;; j++)
             if (compare_less (xs, b, j - 1))
               break;
 
-          if ((j - i) & 1)  
+          /* if dip has odd length, retain dip starting point */
+          if ((j - i) % 2)  
             {
               if (i < boundaries_cnt)
-                odd_basins.push_back (b[i]);
+                retain_points.push_back (b[i]);
               else
-                odd_basins.push_front (b[i - boundaries_cnt]);
+                retain_points.push_front (b[i - boundaries_cnt]);
             }
 
           i = j;
         }    
 
-      new_cnt = odd_basins.size();
+      new_cnt = retain_points.size();
 
 #ifdef DBGOUT
-      cout << "Phase " << phase << " leaves:";
+      cout << ":";
       for (k = 0; k < new_cnt; k++)
-        cout << " " << odd_basins[k];
-      cout << endl;
+        cout << retain_points[k] << " ";
 #endif
 
-      /* populate b with new basin points */
+      /* populate b with new retain points */
       for (k = 0; k < new_cnt; k++)
-          b[k] = odd_basins[k];
+          b[k] = retain_points[k];
 
       /* repopulate b three times */ 
       while (b[k - new_cnt] < n + n) 
@@ -149,6 +159,10 @@ do_eastman (vector<int> &xs)
 
       phase += 1;
     }
+
+#ifdef DBGOUT
+  cout << endl;
+#endif
 
   return b[0];
 }
